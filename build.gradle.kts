@@ -89,11 +89,11 @@ subprojects {
         }
 
         publications.withType<MavenPublication> {
-            val javadocJar by tasks.registering(Jar::class) {
+            val javadocJar by tasks.register("javadocJar${name}", Jar::class) {
                 archiveClassifier.set("javadoc")
             }
             // Stub javadoc.jar artifact
-            artifact(javadocJar.get())
+            artifact(javadocJar)
 
             // Provide artifacts information requited by Maven Central
             pom {
