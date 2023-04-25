@@ -1,3 +1,4 @@
+import org.apache.tools.ant.taskdefs.AbstractJarSignerTask
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -19,6 +20,10 @@ allprojects {
     repositories {
         mavenCentral()
     }
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
 }
 
 subprojects {
@@ -68,9 +73,7 @@ subprojects {
         }
     }
 
-    val javadocJar by tasks.registering(Jar::class) {
-        archiveClassifier.set("javadoc")
-    }
+
 
     publishing {
         // Configure maven central repository
@@ -128,7 +131,9 @@ subprojects {
             signingKey,
             signingPassword,
         )
-        sign(publishing.publications)
+        sign(publishing.publications).forEach {
+            it.dependsOn(javadocJar.get())
+        }
     }
 }
 
