@@ -4,10 +4,15 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 plugins {
     kotlin("multiplatform") version "1.8.20" apply false
     id("maven-publish")
+    signing
 }
 
 allprojects {
@@ -19,6 +24,7 @@ allprojects {
 subprojects {
     apply(plugin = "kotlin-multiplatform")
     apply(plugin = "maven-publish")
+    apply(plugin = "signing")
 
     group = "io.github.andreypfau"
     version = "1.0-SNAPSHOT"
@@ -57,6 +63,22 @@ subprojects {
         }
 
         publishing {
+            // Configure maven central repository
+            repositories {
+                maven {
+                    name = "sonatype"
+                    if (version.toString().endsWith("-SNAPSHOT")) {
+                        setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                    } else {
+                        setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    }
+                    credentials {
+                        username = System.getenv("OSSRH_USERNAME")
+                        password = System.getenv("OSSRH_PASSWORD")
+                    }
+                }
+            }
+
             publications.withType<MavenPublication> {
                 // Stub javadoc.jar artifact
                 artifact(javadocJar.get())
@@ -96,6 +118,17 @@ subprojects {
                 }
             }
         }
+    }
+
+    signing {
+        val signingKey = System.getenv("SIGNING_KEY")
+        val signingPassword = System.getenv("SIGNING_PASSWORD")
+        isRequired = signingKey != null && signingPassword != null
+        useInMemoryPgpKeys(
+            signingKey,
+            signingPassword,
+        )
+        sign(publishing.publications)
     }
 }
 

@@ -15,8 +15,8 @@ jobs:
       - id: create
         uses: nexus-actions/create-nexus-staging-repo@v1
         with:
-          username: <user_name>
-          password: ${{ secrets.SONATYPE_PASSWORD }}
+          username: andreypfau
+          password: ${{ secrets.OSSRH_PASSWORD }}
           staging-profile-id: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
           description: Created by GitHub Actions
   metadata-publish:
