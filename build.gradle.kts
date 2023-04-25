@@ -32,13 +32,19 @@ subprojects {
     group = "io.github.andreypfau"
     version = "1.0-SNAPSHOT"
 
+    buildDir = File(rootDir, "build/${project.name}")
+
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     extensions.getByType<KotlinMultiplatformExtension>().apply {
         explicitApi()
         targetHierarchy.default()
 
         jvm {
-            withJava()
+            compilations.all {
+                kotlinOptions {
+                    jvmTarget = "1.8"
+                }
+            }
             testRuns["test"].executionTask.configure {
                 useJUnitPlatform()
             }
@@ -71,9 +77,7 @@ subprojects {
         }
     }
 
-    val javadocJar by tasks.register<Jar>("javadocJar") {
-        archiveClassifier.set("javadoc")
-    }
+
 
     publishing {
         // Configure maven central repository
@@ -93,10 +97,13 @@ subprojects {
         }
 
         publications.withType<MavenPublication> {
-            // Stub javadoc.jar artifact
+
+            val javadocJar by tasks.register("${this@withType.name}JavadocJar", Jar::class) {
+                archiveClassifier.set("javadoc")
+                archiveAppendix.set("-${this@withType.name}")
+            }
             artifact(javadocJar)
 
-            // Provide artifacts information requited by Maven Central
             pom {
                 name.set("kotlinx-encoding")
                 url.set("https://github.com/andreypfau/kotlinx-encoding")
@@ -124,20 +131,14 @@ subprojects {
     disablePublicationTasksIfNeeded()
 
     signing {
-        val signingKey = System.getenv("SIGNING_KEY")
-        val signingPassword = System.getenv("SIGNING_PASSWORD")
+        val signingKey = project.findProperty("signing.secretKey") as? String ?: System.getenv("SIGNING_KEY")
+        val signingPassword = project.findProperty("signing.password") as? String ?: System.getenv("SIGNING_PASSWORD")
         isRequired = signingKey != null && signingPassword != null
         useInMemoryPgpKeys(
             signingKey,
             signingPassword,
         )
-        sign(publishing.publications).forEach {
-            it.dependsOn(javadocJar)
-        }
-    }
-
-    tasks.withType<AbstractPublishToMaven> {
-        dependsOn(javadocJar)
+        sign(publishing.publications)
     }
 }
 
