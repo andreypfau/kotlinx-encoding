@@ -30,7 +30,8 @@ jobs:
       - name: Publish Metadata
         env:
           SONATYPE_REPOSITORY_ID: ${{ needs.create-staging-repository.outputs.repository-id }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: ./gradlew publish -Dmetadata_only
@@ -45,7 +46,8 @@ jobs:
       - name: Publish
         env:
           SONATYPE_REPOSITORY_ID: ${{ needs.create-staging-repository.outputs.repository-id }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: ./gradlew publish -Dsplit_targets
@@ -60,7 +62,8 @@ jobs:
       - name: Publish
         env:
           SONATYPE_REPOSITORY_ID: ${{ needs.create-staging-repository.outputs.repository-id }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: ./gradlew publish -Dsplit_targets
@@ -72,7 +75,7 @@ jobs:
       - name: Close staging repository
         uses: nexus-actions/release-nexus-staging-repo@main
         with:
-          username: <user_name>
+          username: andreypfau
           password: ${{ secrets.SONATYPE_PASSWORD }}
           staging_repository_id: ${{ needs.create-staging-repository.outputs.repository-id }}
           close_only: 'true'
