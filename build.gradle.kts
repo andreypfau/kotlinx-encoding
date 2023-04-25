@@ -22,6 +22,8 @@ allprojects {
     }
 }
 
+
+
 subprojects {
     apply(plugin = "kotlin-multiplatform")
     apply(plugin = "maven-publish")
@@ -69,7 +71,9 @@ subprojects {
         }
     }
 
-
+    val javadocJar by tasks.register<Jar>("javadocJar") {
+        archiveClassifier.set("javadoc")
+    }
 
     publishing {
         // Configure maven central repository
@@ -89,9 +93,6 @@ subprojects {
         }
 
         publications.withType<MavenPublication> {
-            val javadocJar by tasks.register("javadocJar${name}", Jar::class) {
-                archiveClassifier.set("javadoc")
-            }
             // Stub javadoc.jar artifact
             artifact(javadocJar)
 
@@ -131,6 +132,10 @@ subprojects {
             signingPassword,
         )
         sign(publishing.publications)
+    }
+
+    tasks.withType<AbstractPublishToMaven> {
+        dependsOn(javadocJar)
     }
 }
 
