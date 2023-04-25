@@ -40,10 +40,10 @@ subprojects {
                 useJUnitPlatform()
             }
         }
-        js(IR) {
-            browser()
-            nodejs()
-        }
+//        js(IR) {
+//            browser()
+//            nodejs()
+//        }
 
         macosArm64()
         macosX64()
