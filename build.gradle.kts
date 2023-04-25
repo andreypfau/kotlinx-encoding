@@ -131,7 +131,9 @@ subprojects {
             signingKey,
             signingPassword,
         )
-        sign(publishing.publications)
+        sign(publishing.publications).forEach {
+            it.dependsOn(javadocJar)
+        }
     }
 
     tasks.withType<AbstractPublishToMaven> {
