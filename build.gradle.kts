@@ -58,58 +58,6 @@ subprojects {
             disableCompilationsIfNeeded()
         }
 
-        val javadocJar by tasks.registering(Jar::class) {
-            archiveClassifier.set("javadoc")
-        }
-
-        publishing {
-            // Configure maven central repository
-            repositories {
-                maven {
-                    name = "sonatype"
-                    if (version.toString().endsWith("-SNAPSHOT")) {
-                        setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                    } else {
-                        setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                    }
-                    credentials {
-                        username = System.getenv("OSSRH_USERNAME")
-                        password = System.getenv("OSSRH_PASSWORD")
-                    }
-                }
-            }
-
-            publications.withType<MavenPublication> {
-                // Stub javadoc.jar artifact
-                artifact(javadocJar.get())
-
-                // Provide artifacts information requited by Maven Central
-                pom {
-                    name.set("kotlinx-encoding")
-                    url.set("https://github.com/andreypfau/kotlinx-encoding")
-
-                    licenses {
-                        license {
-                            name.set("MIT")
-                            url.set("https://opensource.org/licenses/MIT")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("andreypfau")
-                            name.set("Andrey Pfau")
-                            email.set("andreypfau@ton.org")
-                        }
-                    }
-                    scm {
-                        url.set("https://github.com/andreypfau/kotlinx-encoding")
-                    }
-                }
-            }
-        }
-
-        disablePublicationTasksIfNeeded()
-
         sourceSets {
             val commonMain by getting
             val commonTest by getting {
@@ -119,6 +67,58 @@ subprojects {
             }
         }
     }
+
+    val javadocJar by tasks.registering(Jar::class) {
+        archiveClassifier.set("javadoc")
+    }
+
+    publishing {
+        // Configure maven central repository
+        repositories {
+            maven {
+                name = "sonatype"
+                if (version.toString().endsWith("-SNAPSHOT")) {
+                    setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                } else {
+                    setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                }
+                credentials {
+                    username = System.getenv("OSSRH_USERNAME")
+                    password = System.getenv("OSSRH_PASSWORD")
+                }
+            }
+        }
+
+        publications.withType<MavenPublication> {
+            // Stub javadoc.jar artifact
+            artifact(javadocJar.get())
+
+            // Provide artifacts information requited by Maven Central
+            pom {
+                name.set("kotlinx-encoding")
+                url.set("https://github.com/andreypfau/kotlinx-encoding")
+
+                licenses {
+                    license {
+                        name.set("MIT")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("andreypfau")
+                        name.set("Andrey Pfau")
+                        email.set("andreypfau@ton.org")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/andreypfau/kotlinx-encoding")
+                }
+            }
+        }
+    }
+
+    disablePublicationTasksIfNeeded()
 
     signing {
         val signingKey = System.getenv("SIGNING_KEY")
