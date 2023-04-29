@@ -1,14 +1,10 @@
-import org.apache.tools.ant.taskdefs.AbstractJarSignerTask
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform") version "1.8.20" apply false
@@ -22,8 +18,6 @@ allprojects {
     }
 }
 
-
-
 subprojects {
     apply(plugin = "kotlin-multiplatform")
     apply(plugin = "maven-publish")
@@ -34,7 +28,7 @@ subprojects {
 
     buildDir = File(rootDir, "build/${project.name}")
 
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    @OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
     extensions.getByType<KotlinMultiplatformExtension>().apply {
         explicitApi()
         targetHierarchy.default()
@@ -53,6 +47,9 @@ subprojects {
         js(IR) {
             browser()
             nodejs()
+        }
+        wasm {
+            d8()
         }
 
         macosArm64()
@@ -77,8 +74,6 @@ subprojects {
             }
         }
     }
-
-
 
     publishing {
         // Configure maven central repository
