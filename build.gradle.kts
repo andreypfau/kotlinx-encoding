@@ -50,6 +50,11 @@ subprojects {
             }
         }
 
+        js(IR) {
+            browser()
+            nodejs()
+        }
+
         macosArm64()
         macosX64()
         ios()
