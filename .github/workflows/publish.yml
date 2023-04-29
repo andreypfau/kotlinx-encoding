@@ -67,6 +67,22 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: ./gradlew publish -Dsplit_targets
+  windows-publish:
+    name: Publish on Windows
+    runs-on: windows-latest
+    needs: create-staging-repository
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      # Additional setup here
+      - name: Publish
+        env:
+          SONATYPE_REPOSITORY_ID: ${{ needs.create-staging-repository.outputs.repository-id }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publish -Dsplit_targets
   close-staging-repository:
     name: Close staging repository
     runs-on: ubuntu-latest

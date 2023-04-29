@@ -49,6 +49,7 @@ subprojects {
                 useJUnitPlatform()
             }
         }
+
         js(IR) {
             browser()
             nodejs()
